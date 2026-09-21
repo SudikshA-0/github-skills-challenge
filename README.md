@@ -2,75 +2,71 @@
 
 ## AIOps Scenario
 
-This project monitors a synthetic `payment-service` using operational data such as response time, CPU usage, memory usage, and log information.
+This project is about monitoring a `payment-service`. The service data contains response time, CPU usage, memory usage and log details.
 
-The purpose is to detect abnormal service behaviour and process the detected anomalies through the provided AIOps pipeline.
+The aim is to find abnormal behaviour in the service and pass those anomalies through the given AIOps workflow.
 
 ## Operational Data
 
-The data contains:
+The data is stored in `data/service_data.json`.
 
-- `timestamp`
-- `service`
-- `response_time_ms`
-- `cpu_percent`
-- `memory_percent`
-- `log_level`
-- `message`
+It contains:
 
-Most records show normal behaviour with low response time, CPU and memory usage.
+- timestamp
+- service
+- response time
+- CPU usage
+- memory usage
+- log level
+- message
 
-The records at `10:05` and `10:06` show unusual behaviour.
+Most of the records are normal.
 
-At `10:05`:
-- Response time: `610 ms`
-- CPU: `75%`
-- Memory: `70%`
-- Log level: `ERROR`
-- Message: `Payment service timeout`
+The main unusual records are:
 
-At `10:06`:
-- Response time: `640 ms`
-- CPU: `94%`
-- Memory: `91%`
-- Log level: `ERROR`
-- Message: `Database connection timeout`
+- `10:05` - response time `610 ms` with an `ERROR` log for a payment service timeout.
+- `10:06` - response time `640 ms`, CPU `94%`, memory `91%` and an `ERROR` log for a database connection timeout.
 
 ## Anomaly Detection
 
-The provided detector uses these thresholds:
+The detector checks response time, CPU and memory against fixed limits.
 
-- Response time: `500 ms`
-- CPU: `80%`
-- Memory: `80%`
+It detected 2 anomalies:
 
-It checks the operational metrics and log level to identify anomalies.
+- `10:05` - High response time, Error log detected
+- `10:06` - High response time, High CPU utilization, High memory utilization, Error log detected
 
 ## Event Flow
 
-The provided components follow this flow:
+The flow used in the project is:
 
-`Operational Data → Anomaly Detection → Event → Producer → Topic → Consumer → AIOps Output`
+`Data → Anomaly Detection → Event → Producer → Topic → Consumer → AIOps Output`
 
-- `anomaly_detector.py` detects anomalies.
-- `event_producer.py` publishes anomaly events.
-- `event_topic.py` stores events in memory.
-- `event_consumer.py` consumes events.
-- `aiops_pipeline.py` runs the workflow.
+The project uses an in-memory topic for the event flow.
 
-## Issues and Corrections
+## Issues Found
 
-The intentional issues found during testing and their corrections will be documented here.
+Two issues were found in the provided code.
+
+1. The detector was checking for `WARNING`, but the data contains `ERROR`. This was changed to check for `ERROR`.
+
+2. The producer and consumer were using different topics. The consumer was changed to use the same topic as the producer.
+
+After these changes, both anomaly events were received by the consumer.
 
 ## Final Result
 
-The final pipeline execution result will be documented after testing.
+The final run processed 10 records.
+
+2 anomalies were detected and 2 events were consumed successfully.
+
+The final output showed both anomaly events with their reasons.
 
 ## Limitation
 
-The anomaly detector uses fixed thresholds, so its results depend on the configured threshold values.
+The detector uses fixed thresholds, so changing the threshold values can change the anomaly results.
 
-## Reproduction
+## Run
 
 From the repository root:
 

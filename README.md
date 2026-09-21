@@ -36,6 +36,8 @@ It detected 2 anomalies:
 - `10:05` - High response time, Error log detected
 - `10:06` - High response time, High CPU utilization, High memory utilization, Error log detected
 
+No expected anomaly was missed in the provided data, and no normal event was incorrectly flagged.
+
 ## Event Flow
 
 The flow used in the project is:
